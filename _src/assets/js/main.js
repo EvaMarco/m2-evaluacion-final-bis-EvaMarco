@@ -8,6 +8,7 @@ const opt8 = document.querySelector('.opt_8Js');
 const backCardImage = 'https://via.placeholder.com/160x195/30d9c4/ffffff/?text=ADALAB';
 
 function init(){
+  localStorage.removeItem('pair');
   if(localStorage.getItem('value') === ''){
     opt4.setAttribute('checked', true);
     localStorage.setItem('value', 4);
@@ -34,10 +35,52 @@ function init(){
 
 function show(event){
   const guiltyElement = event.currentTarget;
-  const imgArray = guiltyElement.querySelectorAll('.img');
-  for (const item of imgArray){
-    item.classList.toggle('hidden');
+  const able = guiltyElement.getAttribute('disabled');
+  if(able === 'false'){
+    console.log('hay pair');
+    const imgArray = guiltyElement.querySelectorAll('.img');
+    for (const item of imgArray){
+      item.classList.toggle('hidden');
+    }
+    const firstPair = localStorage.getItem('pair');
+    if(firstPair !== null){
+      const secondPair = guiltyElement.getAttribute('dataPair');
+      if(firstPair === secondPair){
+        console.log(board.querySelector(`[dataPair='${firstPair}']`));
+        console.log(board.querySelector(`[dataPair='${secondPair}']`));
+        const pairArray = board.querySelectorAll(`[dataPair = '${firstPair}']`);
+        for(const item of pairArray){
+          item.classList.add('hidden');
+        }
+        console.log('somos parejita');
+        localStorage.removeItem('pair');
+      }
+      else{
+        guiltyElement.setAttribute('disabled', true);
+        const disabledLis = board.querySelectorAll(`[disabled = 'true']`);
+        console.log(disabledLis);
+        for(const item of disabledLis){
+          const imgArray = item.querySelectorAll('.img');
+          item.setAttribute('disabled', false);
+          for (const item of imgArray){
+            item.classList.toggle('hidden');
+          }
+        }
+
+
+        localStorage.removeItem('pair');
+        // guiltyElement.setAttribute('disabled', false);
+      }
+    }
+    else{
+      console.log('no hay pair y lo voy a guardar');
+      const choosedPair =guiltyElement.getAttribute('dataPair');
+      localStorage.setItem('pair', choosedPair);
+      console.log(choosedPair, 'guardado en local');
+      guiltyElement.setAttribute('disabled', true);
+    }
   }
+
 }
 
 function createCard(url, name, pair){
@@ -45,6 +88,7 @@ function createCard(url, name, pair){
   newElement.classList.add('card');
   newElement.setAttribute('dataUrl', url);
   newElement.setAttribute('dataPair', pair);
+  newElement.setAttribute('disabled', false);
   const faceImage = document.createElement('img');
   faceImage.classList.add('img');
   faceImage.classList.add('hidden');
