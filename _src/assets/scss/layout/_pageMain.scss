@@ -6,7 +6,11 @@
   width:160px;
   border: 1px solid grey;
   @include bg;
+  margin: 10px;
+  border-radius: 8px;
 }
 .board{
   @include clearList;
+  display:flex;
+  flex-wrap: wrap;
 }
