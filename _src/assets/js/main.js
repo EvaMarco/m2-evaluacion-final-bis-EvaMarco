@@ -37,7 +37,6 @@ function show(event){
   const guiltyElement = event.currentTarget;
   const able = guiltyElement.getAttribute('disabled');
   if(able === 'false'){
-    console.log('hay pair');
     const imgArray = guiltyElement.querySelectorAll('.img');
     for (const item of imgArray){
       item.classList.toggle('hidden');
@@ -46,19 +45,16 @@ function show(event){
     if(firstPair !== null){
       const secondPair = guiltyElement.getAttribute('dataPair');
       if(firstPair === secondPair){
-        console.log(board.querySelector(`[dataPair='${firstPair}']`));
-        console.log(board.querySelector(`[dataPair='${secondPair}']`));
         const pairArray = board.querySelectorAll(`[dataPair = '${firstPair}']`);
         for(const item of pairArray){
           item.classList.add('hidden');
         }
-        console.log('somos parejita');
         localStorage.removeItem('pair');
       }
       else{
         guiltyElement.setAttribute('disabled', true);
         const disabledLis = board.querySelectorAll(`[disabled = 'true']`);
-        console.log(disabledLis);
+
         for(const item of disabledLis){
           const imgArray = item.querySelectorAll('.img');
           item.setAttribute('disabled', false);
@@ -66,17 +62,12 @@ function show(event){
             item.classList.toggle('hidden');
           }
         }
-
-
         localStorage.removeItem('pair');
-        // guiltyElement.setAttribute('disabled', false);
       }
     }
     else{
-      console.log('no hay pair y lo voy a guardar');
       const choosedPair =guiltyElement.getAttribute('dataPair');
       localStorage.setItem('pair', choosedPair);
-      console.log(choosedPair, 'guardado en local');
       guiltyElement.setAttribute('disabled', true);
     }
   }
