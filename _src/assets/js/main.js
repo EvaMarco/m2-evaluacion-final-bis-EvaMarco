@@ -32,7 +32,39 @@ function init(){
   }
   board.innerHTML='';
 }
-
+function comparePair(element, firstPair){
+  const secondPair = element.getAttribute('dataPair');
+  if(firstPair === secondPair){
+    const pairArray = board.querySelectorAll(`[dataPair = '${firstPair}']`);
+    for(const item of pairArray){
+      item.classList.add('hidden');
+    }
+    localStorage.removeItem('pair');
+  }
+  else{
+    element.setAttribute('disabled', true);
+    const disabledLis = board.querySelectorAll(`[disabled = 'true']`);
+    for(const item of disabledLis){
+      const imgArray = item.querySelectorAll('.img');
+      item.setAttribute('disabled', false);
+      for (const item of imgArray){
+        item.classList.toggle('hidden');
+      }
+    }
+    localStorage.removeItem('pair');
+  }
+}
+function checkPair(element){
+  const firstPair = localStorage.getItem('pair');
+  if(firstPair !== null){
+    setTimeout(comparePair(element, firstPair),6000);
+  }
+  else{
+    const choosedPair =element.getAttribute('dataPair');
+    localStorage.setItem('pair', choosedPair);
+    element.setAttribute('disabled', true);
+  }
+}
 function show(event){
   const guiltyElement = event.currentTarget;
   const able = guiltyElement.getAttribute('disabled');
@@ -41,38 +73,10 @@ function show(event){
     for (const item of imgArray){
       item.classList.toggle('hidden');
     }
-    const firstPair = localStorage.getItem('pair');
-    if(firstPair !== null){
-      const secondPair = guiltyElement.getAttribute('dataPair');
-      if(firstPair === secondPair){
-        const pairArray = board.querySelectorAll(`[dataPair = '${firstPair}']`);
-        for(const item of pairArray){
-          item.classList.add('hidden');
-        }
-        localStorage.removeItem('pair');
-      }
-      else{
-        guiltyElement.setAttribute('disabled', true);
-        const disabledLis = board.querySelectorAll(`[disabled = 'true']`);
-
-        for(const item of disabledLis){
-          const imgArray = item.querySelectorAll('.img');
-          item.setAttribute('disabled', false);
-          for (const item of imgArray){
-            item.classList.toggle('hidden');
-          }
-        }
-        localStorage.removeItem('pair');
-      }
-    }
-    else{
-      const choosedPair =guiltyElement.getAttribute('dataPair');
-      localStorage.setItem('pair', choosedPair);
-      guiltyElement.setAttribute('disabled', true);
-    }
+    setTimeout(checkPair(guiltyElement),6000);
   }
-
 }
+
 
 function createCard(url, name, pair){
   const newElement = document.createElement('li');
