@@ -2,9 +2,11 @@
 
 const button = document.querySelector('.btn__js');
 const board = document.querySelector('.board_js');
+const text = document.querySelector('.result__textJs');
 const opt4 = document.querySelector('.opt_4Js');
 const difArray = document.querySelectorAll('.dif__option');
 const backCardImage = 'https://via.placeholder.com/160x195/30d9c4/ffffff/?text=ADALAB';
+let counter = 0;
 
 function init(){
   opt4.setAttribute('checked', true);
@@ -39,55 +41,68 @@ function createCard(url, name, pair){
   board.appendChild(newElement);
   newElement.addEventListener('click', showCard);
 }
-
-function comparePair(element, firstPair){
-  const secondPair = element.getAttribute('dataPair');
-  if(firstPair === secondPair){
-    const pairArray = board.querySelectorAll(`[dataPair = '${firstPair}']`);
-    for(const item of pairArray){
-      item.classList.add('hidden');
-    }
-    localStorage.removeItem('pair');
-  }
-  else{
-    element.setAttribute('disabled', true);
-    const disabledLis = board.querySelectorAll(`[disabled = 'true']`);
-    for(const item of disabledLis){
-      const imgArray = item.querySelectorAll('.img');
-      item.setAttribute('disabled', false);
-      for (const item of imgArray){
-        item.classList.toggle('hidden');
-      }
-    }
-    localStorage.removeItem('pair');
+function checkWin(){
+  const storedValue = parseInt(localStorage.getItem('value'));
+  if (counter === storedValue){
+    text.innerHTML = '¡Has ganado!';
+    button.removeAttribute('disabled');
+    counter = 0;
   }
 }
-function checkPair(element){
+const checkPair = (element) =>{
   const firstPair = localStorage.getItem('pair');
   if(firstPair !== null){
-    setTimeout(comparePair(element, firstPair),6000);
+    const secondPair = element.getAttribute('dataPair');
+    if(firstPair === secondPair){
+      const pairArray = board.querySelectorAll(`[dataPair = '${firstPair}']`);
+      for(const item of pairArray){
+        item.classList.add('noVisibility');
+      }
+      localStorage.removeItem('pair');
+      text.innerHTML = '¡Has encontrado una pareja!';
+      counter += 2;
+
+    }
+    else{
+      text.innerHTML = 'No son iguales';
+      element.setAttribute('disabled', true);
+      const disabledLis = board.querySelectorAll(`[disabled = 'true']`);
+      for(const item of disabledLis){
+        const imgArray = item.querySelectorAll('.img');
+        item.setAttribute('disabled', false);
+        for (const item of imgArray){
+          item.classList.toggle('hidden');
+        }
+      }
+      localStorage.removeItem('pair');
+    }
+    setTimeout (checkWin, 300);
   }
   else{
-    const choosedPair =element.getAttribute('dataPair');
+    const choosedPair = element.getAttribute('dataPair');
     localStorage.setItem('pair', choosedPair);
     element.setAttribute('disabled', true);
   }
-}
+};
 
 function showCard(event){
+  text.innerHTML = '';
   const selectedCard = event.currentTarget;
   const disabled = selectedCard.getAttribute('disabled');
   if(disabled === 'false'){
+    selectedCard.setAttribute('disabled', true);
     const imgArray = selectedCard.querySelectorAll('.img');
     for (const item of imgArray){
       item.classList.toggle('hidden');
     }
+    setTimeout(checkPair, 1000, selectedCard);
   }
-  checkPair(selectedCard);
 }
 
 function startGame(){
+  board.innerHTML='';
   const selectedDif = localStorage.getItem('value');
+  board.style.gridTemplateColumns = selectedDif;
   const ENDPOINT = `https://raw.githubusercontent.com/Adalab/cards-data/master/${selectedDif}.json`;
   fetch(ENDPOINT)
     .then(function(response) {
