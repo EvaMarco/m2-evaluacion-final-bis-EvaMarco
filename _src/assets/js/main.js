@@ -7,6 +7,7 @@ const opt4 = document.querySelector('.opt_4Js');
 const difArray = document.querySelectorAll('.dif__option');
 const backCardImage = 'https://via.placeholder.com/160x195/30d9c4/ffffff/?text=ADALAB';
 let counter = 0;
+let cardsArray = [];
 
 function init(){
   opt4.setAttribute('checked', true);
@@ -38,8 +39,7 @@ function createCard(url, name, pair){
   tailImage.alt = 'default';
   newElement.appendChild(faceImage);
   newElement.appendChild(tailImage);
-  board.appendChild(newElement);
-  newElement.addEventListener('click', showCard);
+  cardsArray.push(newElement);
 }
 function checkWin(){
   const storedValue = parseInt(localStorage.getItem('value'));
@@ -47,6 +47,8 @@ function checkWin(){
     text.innerHTML = '¡Has ganado!';
     button.removeAttribute('disabled');
     counter = 0;
+    board.innerHTML='';
+    cardsArray = [];
   }
 }
 const checkPair = (element) =>{
@@ -98,9 +100,15 @@ function showCard(event){
     setTimeout(checkPair, 1000, selectedCard);
   }
 }
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 function startGame(){
-  board.innerHTML='';
   const selectedDif = localStorage.getItem('value');
   board.style.gridTemplateColumns = selectedDif;
   const ENDPOINT = `https://raw.githubusercontent.com/Adalab/cards-data/master/${selectedDif}.json`;
@@ -112,11 +120,17 @@ function startGame(){
       for (const item of data){
         createCard(item.image, item.name, item.pair);
       }
+      const shuffledCards = shuffle(cardsArray);
+      for(const newElement of shuffledCards){
+        board.appendChild(newElement);
+        newElement.addEventListener('click', showCard);
+      }
     });
   button.setAttribute('disabled', true);
 }
 
 button.addEventListener('click', startGame);
+
 for (const item of difArray){
   item.addEventListener('click', setDifficulty);
 }
