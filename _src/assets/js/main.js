@@ -135,8 +135,14 @@ function startGame(){
             };
             selectedCards.push(pokemon);
             selectedCards.push(pokemon2);
+            // Cuándo se pinta esto?
+            console.log('--- AHORA Y AQUÍ TENGO LOS DATOS ---');
+            console.log(selectedCards);
+            console.log('--- SERÍA GUAY, CONSEGUIR TODOS LOS DATOS Y LUEGO PINTAR, SI SOLO TUVIÉSEMOS UNA FORMA DE HACER PETICIONES Y CUANDO TODAS ESTÉN HACER ALGO ---');
+            console.log('--- TAMBIÉN MOLARÍA HACER FUNCIONES FLECHA ---');
           });
       }
+      console.log('--- AQUÍ PUEDO O NO PUEDO TENERLOS, SEGURAMENTE NO PORQUE LAS PETICIONES VAN A SU ROLLO ---');
       console.log('soy selected', selectedCards);
       console.log('soy la long de selected', selectedCards.length);
 
