@@ -5,7 +5,7 @@ const board = document.querySelector('.board_js');
 const text = document.querySelector('.result__textJs');
 const opt4 = document.querySelector('.opt_4Js');
 const difArray = document.querySelectorAll('.dif__option');
-const backCardImage = 'https://via.placeholder.com/160x195/30d9c4/ffffff/?text=ADALAB';
+const backCardImage = 'assets/images/pokemon-logo.png';
 let counter = 0;
 let cardsArray = [];
 
@@ -100,32 +100,54 @@ function showCard(event){
     setTimeout(checkPair, 1000, selectedCard);
   }
 }
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 function startGame(){
   const selectedDif = localStorage.getItem('value');
-  board.style.gridTemplateColumns = selectedDif;
-  const ENDPOINT = `https://raw.githubusercontent.com/Adalab/cards-data/master/${selectedDif}.json`;
+  const ENDPOINT = `https://pokeapi.co/api/v2/pokemon/`;
   fetch(ENDPOINT)
     .then(function(response) {
       return response.json();
     })
     .then(function(data) {
-      for (const item of data){
-        createCard(item.image, item.name, item.pair);
+      const cards = [];
+      const selectedCards = [];
+      for( let i = 0; i<= (selectedDif-1)/2; i++){
+        let item = data.results[Math.floor(Math.random()*data.results.length)];
+        cards.push(item);
+        const index = data.results.indexOf(item);
+        data.results.splice(index,1);
       }
-      const shuffledCards = shuffle(cardsArray);
-      for(const newElement of shuffledCards){
+      for(const item of cards){
+        fetch(item.url)
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(data) {
+            const pokemon = {
+              'image':data.sprites.back_default,
+              'name': data.name,
+              'pair' : data.id
+            };
+            const pokemon2 = {
+              'image':data.sprites.front_default,
+              'name': data.name,
+              'pair' : data.id
+            };
+            selectedCards.push(pokemon);
+            selectedCards.push(pokemon2);
+          });
+      }
+      console.log('soy selected', selectedCards);
+      console.log('soy la long de selected', selectedCards.length);
+
+      for(const item of selectedCards){
+        console.log('soy un elemento de', selectedCards);
+        const newElement = createCard(item.image, item.name, item.pair);
         board.appendChild(newElement);
         newElement.addEventListener('click', showCard);
       }
     });
+
   button.setAttribute('disabled', true);
 }
 
